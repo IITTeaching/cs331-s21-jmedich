@@ -22,8 +22,14 @@ def captured_output():
 
 # implement this function
 def is_perfect(n):
-    pass
-
+    sum = 0
+    for num in range(1,n):
+        if (n % num == 0):
+            sum += num
+    if sum == n:
+        return True
+    else:
+        return False
 # (3 points)
 def test1():
     tc = unittest.TestCase()
@@ -40,7 +46,11 @@ def test1():
 
 # implement this function
 def multiples_of_3_and_5(n):
-    pass
+    sum = 0
+    for num in range(1, n):
+        if(num % 3 == 0 or num % 5 == 0):
+            sum += num
+    return sum
 
 # (3 points)
 def test2():
@@ -53,7 +63,12 @@ def test2():
 # EXERCISE 3
 #################################################################################
 def integer_right_triangles(p):
-    pass
+    num = 0
+    for x in range(1, int(p)):
+        for y in range(1, int(p)):
+            if((y + (x**2 + y**2)**(0.5) + x) == p):
+                num += 1
+    return num/2
 
 def test3():
     tc = unittest.TestCase()
@@ -67,7 +82,38 @@ def test3():
 
 # implement this function
 def gen_pattern(chars):
-    pass
+    length = len(chars)
+    if length == 1:
+        print(chars)
+        return
+    center = ''
+    for x in range(length):
+        center += chars[-1 - x]
+    for x in range(length -2, -1, -1):
+        center += chars[-1 - x]
+    middle = '.'.join(center)
+    width = len(middle)
+    for num in range(length - 1):
+        center = ''
+        for x in range(num + 1):
+            center += chars[-1 - x]
+        for x in range(num -1, -1, -1):
+            center += chars[-1 - x]
+        center = '.'.join(center)
+        string = center.center(width, '.')
+        print(string)
+    print(middle)    
+    for num in range(length - 2, -1, -1):
+        center = ''
+        for x in range(num + 1):
+            center += chars[-1 - x]
+        for x in range(num -1, -1, -1):
+            center += chars[-1 - x]
+        center = '.'.join(center)
+        string = center.center(width, '.')
+        print(string)
+
+
 
 def test4():
     tc = unittest.TestCase()
