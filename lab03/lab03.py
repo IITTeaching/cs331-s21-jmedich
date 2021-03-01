@@ -17,7 +17,11 @@ def mysort(lst: List[T], compare: Callable[[T, T], int]) -> List[T]:
     right element, 1 if the left is larger than the right, and 0 if the two
     elements are equal.
     """
-    pass
+    for i in range(len(lst)):
+        for j in range(len(lst)):
+            if compare(lst[i],lst[j]) == -1:
+                lst.insert(j, lst.pop(i))
+    return lst
 
 def mybinsearch(lst: List[T], elem: S, compare: Callable[[T, S], int]) -> int:
     """
@@ -27,7 +31,20 @@ def mybinsearch(lst: List[T], elem: S, compare: Callable[[T, S], int]) -> int:
     position of the first (leftmost) match for elem in lst. If elem does not
     exist in lst, then return -1.
     """
-    pass
+    low = 0
+    high = len(lst) - 1
+    while low <= high:
+      mid = (low + high) // 2
+      if compare(lst[mid], elem) == -1:
+        low = mid + 1
+      elif compare(lst[mid], elem) == 1:
+        high = mid - 1
+      else:
+        if (low < high):
+          high = mid
+        else:
+          return mid
+    return -1
 
 class Student():
     """Custom class to test generic sorting and searching."""
@@ -106,13 +123,22 @@ def test1_5():
 # EXERCISE 2
 #################################################################################
 class PrefixSearcher():
-
+    substrings = []
+    k = 0
     def __init__(self, document, k):
         """
         Initializes a prefix searcher using a document and a maximum
         search string length k.
         """
-        pass
+        for i in range(len(document)):
+            if(i + k < len(document)):
+                self.substrings.append(document[i:i+k])
+            else:
+                self.substrings.append(document[i:len(document)])
+        strcmp = lambda x,y: 0 if x == y else (-1 if x < y else 1)
+        self.substrings = mysort(self.substrings, strcmp)
+        self.k = k
+        print(self.substrings)
 
     def search(self, q):
         """
@@ -121,7 +147,13 @@ class PrefixSearcher():
         length up to n). If q is longer than n, then raise an
         Exception.
         """
-        pass
+        if len(q) <= self.k:
+            for substring in self.substrings:
+                if q in substring:
+                    return True
+            return False
+        else:
+            raise InputError()
 
 # 30 Points
 def test2():
@@ -158,25 +190,22 @@ def test2_2():
 # EXERCISE 3
 #################################################################################
 class SuffixArray():
-
+    array = []
     def __init__(self, document: str):
-        """
-        Creates a suffix array for document (a string).
-        """
-        pass
+        self.thedocument = document
+        for i in range(len(document)):
+            self.array.append(int(i))
+        strcompare = lambda x,y: 0 if self.thedocument[x:] == self.thedocument[y:] else (-1 if self.thedocument[x:] < self.thedocument[y:] else 1)
+        self.array = mysort(self.array, strcompare)
+
 
 
     def positions(self, searchstr: str):
-        """
-        Returns all the positions of searchstr in the documented indexed by the suffix array.
-        """
-        pass
+        return [mybinsearch(self.array, searchstr, lambda x,y: 0 if self.thedocument[x:][:len(y)] == y else (-1 if self.thedocument[x:][:len(y)] < y else 1))]
 
     def contains(self, searchstr: str):
-        """
-        Returns true of searchstr is coontained in document.
-        """
-        pass
+        return self.positions(searchstr) != [-1]
+
 
 # 40 Points
 def test3():
