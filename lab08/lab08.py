@@ -1,7 +1,8 @@
 from unittest import TestCase
 import random
 import functools
-
+import sys
+sys.setrecursionlimit(10000)
 ################################################################################
 # 1. IMPLEMENT THIS HEAP
 ################################################################################
@@ -11,23 +12,43 @@ class Heap:
         self.key  = key
 
     @staticmethod
-    def _parent(idx):
+    def parent(idx):
         return (idx-1)//2
 
     @staticmethod
-    def _left(idx):
+    def left(idx):
         return idx*2+1
 
     @staticmethod
-    def _right(idx):
+    def right(idx):
         return idx*2+2
 
     def heapify(self, idx=0):
         ### BEGIN SOLUTION
+        left = self.left(idx)
+        right = self.right(idx)
+        mid = idx
+        if len(self.data) > left and (self.key(self.data[left]) > self.key(self.data[mid])):
+            mid = left
+        if len(self.data) > right and (self.key(self.data[right]) > self.key(self.data[mid])):
+            mid = right
+        if mid != idx:
+            self.data[mid], self.data[idx] = self.data[idx], self.data[mid]
+            idx = mid
+            self.heapify(idx = idx)
         ### END SOLUTION
 
     def add(self, x):
         ### BEGIN SOLUTION
+        self.data.append(x)
+        idx = len(self.data) - 1
+        while idx > 0:
+            pidx = self.parent(idx)
+            if self.key(self.data[idx]) > self.key(self.data[pidx]):
+                self.data[idx], self.data[pidx] = self.data[pidx], self.data[idx]
+                idx = pidx
+            else:
+                break
         ### END SOLUTION
 
     def peek(self):
@@ -106,7 +127,6 @@ def test_key_heap_4():
 
     for x in lst:
         h.add(x)
-
     for x in range(999, -1000, -1):
         tc.assertEqual(x, h.pop())
 
@@ -130,6 +150,19 @@ def test_key_heap_5():
 ################################################################################
 def running_medians(iterable):
     ### BEGIN SOLUTION
+    minheap = Heap(lambda x:-x)
+    maxheap = Heap(lambda x:x)
+    medians = [None]*len(iterable)
+    for i, x in enumerate(iterable):
+        minheap.add(x)
+        maxheap.add(minheap.pop())
+        if len(minheap) < len(maxheap):
+            minheap.add(maxheap.pop())
+        if(len(maxheap) == len(minheap)):
+            medians[i] = ((minheap.peek() + maxheap.peek()) / 2)
+        else:
+            medians[i] = (minheap.peek())
+    return medians
     ### END SOLUTION
 
 ################################################################################
@@ -174,6 +207,17 @@ def test_median_3():
 ################################################################################
 def topk(items, k, keyf):
     ### BEGIN SOLUTION
+    heap = Heap(lambda x: -keyf(x))
+    list = []
+    for item in items:
+        if len(heap) < k:
+            heap.add(item)
+        elif keyf(item) > keyf(heap.peek()):
+            heap.pop()
+            heap.add(item)
+    for i in range(k):
+        list.append(heap.pop())
+    return list[::-1]
     ### END SOLUTION
 
 ################################################################################
